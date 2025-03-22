@@ -1,0 +1,20 @@
+{
+  "name": "apiusuarios",
+  "version": "1.0.0",
+  "description": "Api de usuários desenvolvida em Node.js",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/brunomffl/apiUsuarios.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/brunomffl/apiUsuarios/issues"
+  },
+  "homepage": "https://github.com/brunomffl/apiUsuarios#readme"
+}
