@@ -2,7 +2,7 @@
   "name": "apiusuarios",
   "version": "1.0.0",
   "description": "Projeto API RESTful desenvolvida com node.js e express",
-  "main": "index.js",
+  "main": "src/server.ts",
   "scripts": {
     "dev": "tsx watch src/server.ts"
   },
@@ -10,8 +10,7 @@
     "type": "git",
     "url": "git+https://github.com/brunomffl/apiUsuarios.git"
   },
-  "keywords": [],
-  "author": "",
+  "author": "Bruno",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/brunomffl/apiUsuarios/issues"
@@ -20,5 +19,8 @@
   "devDependencies": {
     "tsx": "^4.19.3",
     "typescript": "^5.8.2"
+  },
+  "dependencies": {
+    "express": "^5.1.0"
   }
 }
