@@ -1,5 +1,5 @@
 import { Router } from "express";
-//importar as rotas do usersRoutes.ts
+import { usersRoutes } from "./usersRoutes";
 
 const routes = Router();
 
