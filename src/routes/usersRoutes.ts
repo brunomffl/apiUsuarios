@@ -5,9 +5,14 @@ import { Router } from "express";
 const usersRoutes = Router();
 //instanciar o controlador -> const usersController = new UsersController();
 
-usersRoutes.get("/", /*middleware, usersController.index*/);
-usersRoutes.post("/", /*middleware, usersController.index*/);
-usersRoutes.put("/", /*middleware, usersController.index*/);
-usersRoutes.delete("/", /*middleware, usersController.index*/);
+usersRoutes.get("/", (req, res) => {
+    res.send("Teste do GET!");
+});
+
+//usersRoutes.post("/", /*middleware, usersController.index*/);
+
+//usersRoutes.put("/", /*middleware, usersController.index*/);
+
+//usersRoutes.delete("/", /*middleware, usersController.index*/);
 
 export { usersRoutes }
