@@ -1,2 +1,2 @@
 # apiUsuarios
-Projeto API RESTful desenvolvida com node.js e express
+Projeto API RESTful desenvolvida com node.js, typescript e express
