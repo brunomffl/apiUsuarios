@@ -1,9 +1,9 @@
 import fs from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
-
 import path from 'node:path';
 
-const DATABASE_PATH = path.resolve(__dirname, '../data/db.json');
+const DATABASE_PATH = path.resolve(__dirname, '../data/database.json');
+const DATABASE_DIR = path.dirname(DATABASE_PATH);
 
 type DatabaseTable = Record<string, any>;
 type Filters = Record<string, string>;
@@ -12,13 +12,21 @@ export class Database {
     #database: Record<string, DatabaseTable[]> = {};
 
     constructor() {
-        fs.readFile(DATABASE_PATH, 'utf8')
-            .then((data) => {
-                this.#database = JSON.parse(data);
-            })
-            .catch(() => {
+        this.#ensureDatabaseFile();
+    }
+
+    async #ensureDatabaseFile() {
+        try {
+            await fs.mkdir(DATABASE_DIR, { recursive: true });
+            const data = await fs.readFile(DATABASE_PATH, 'utf8');
+            this.#database = JSON.parse(data);
+        } catch (error) {
+            if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
                 this.#persist();
-            });
+            } else {
+                console.error('Erro ao inicializar o banco de dados:', error);
+            }
+        }
     }
 
     #persist() {
@@ -28,7 +36,7 @@ export class Database {
     }
 
     insert(table: string, data: DatabaseTable) {
-        const newData = { id: randomUUID(), ...data };
+        const newData = {...data };
 
         if (Array.isArray(this.#database[table])) {
             this.#database[table].push(newData);
