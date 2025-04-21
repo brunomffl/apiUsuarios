@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { string, z } from "zod";
-import { Database } from "../database/database";
+import { z } from "zod";
+import { Database } from "../database/database.js";
 import { randomUUID } from "crypto";
 
 const database = new Database();

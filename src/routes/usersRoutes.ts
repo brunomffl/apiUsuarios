@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { UsersControllers } from "../controllers/usersControllers";
+import { UsersControllers } from "../controllers/usersControllers.js";
 //importar o middleware aqui
 
 const usersRoutes = Router();

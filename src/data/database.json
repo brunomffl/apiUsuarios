@@ -4,6 +4,21 @@
       "nomeCompleto": "Teste teste",
       "email": "teste@email.com",
       "username": "dallas"
+    },
+    {
+      "nomeCompleto": "Teste teste",
+      "email": "teste@email.com",
+      "username": "dallas"
+    },
+    {
+      "nomeCompleto": "bruno cardoso da silva",
+      "email": "brunocardoso07@outlook.com",
+      "username": "brunoshiesty09"
+    },
+    {
+      "nomeCompleto": "bla bla bla",
+      "email": "blablabla@email.com",
+      "username": "joeburrow"
     }
   ]
 }

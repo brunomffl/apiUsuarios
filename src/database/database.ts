@@ -1,8 +1,9 @@
 import fs from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-const DATABASE_PATH = path.resolve(__dirname, '../data/database.json');
+const DATABASE_PATH = fileURLToPath(new URL("../data/database.json", import.meta.url))
 const DATABASE_DIR = path.dirname(DATABASE_PATH);
 
 type DatabaseTable = Record<string, any>;
