@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "tsx watch src/server.ts"
   },
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/brunomffl/apiUsuarios.git"
