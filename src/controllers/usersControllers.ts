@@ -14,7 +14,6 @@ export class UsersControllers{
 
     create(req: Request, res: Response){
         const bodySchema = z.object({
-            id: z.string().default(() => randomUUID()),
             nomeCompleto: z.string({ required_error: "É necessário informar o nome completo do usuário" })
             .trim().min(5),
             email: z.string({ required_error: "É necessário informar o e-mail do usuário" }).email(),
@@ -33,6 +32,19 @@ export class UsersControllers{
         }
 
         return res.status(500).json({ erro: 'Erro inesperado' });
+    }
+
+    remove(req: Request, res: Response){
+        const { id } = req.params;
+
+        const usuarios = database.select("usuarios");
+        const usuarioExiste = usuarios.some(usuario => usuario.id === id);
+
+        if(!usuarioExiste){
+            return res.status(404).json({ erro: `Usuário com id: ${ id } não foi encontrado no sistema` });
+        }
+        database.delete("usuarios", id);
+        return res.status(204).json();
 
     }
 }

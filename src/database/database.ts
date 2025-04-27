@@ -21,6 +21,23 @@ export class Database {
             await fs.mkdir(DATABASE_DIR, { recursive: true });
             const data = await fs.readFile(DATABASE_PATH, 'utf8');
             this.#database = JSON.parse(data);
+            
+            let modificado = false;
+            for (const table in this.#database) {
+                if (Array.isArray(this.#database[table])) {
+                    this.#database[table] = this.#database[table].map(item => {
+                        if (!item.id) {
+                            modificado = true;
+                            return { id: randomUUID(), ...item };
+                        }
+                        return item;
+                    });
+                }
+            }
+            
+            if (modificado) {
+                this.#persist();
+            }
         } catch (error) {
             if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
                 this.#persist();
@@ -35,16 +52,16 @@ export class Database {
             console.error('Erro ao persistir o banco de dados:', err);
         });
     }
-
+    
     insert(table: string, data: DatabaseTable) {
-        const newData = {...data };
-
+        const newData = { id: randomUUID(), ...data };
+    
         if (Array.isArray(this.#database[table])) {
             this.#database[table].push(newData);
         } else {
             this.#database[table] = [newData];
         }
-
+    
         this.#persist();
         return newData;
     }
