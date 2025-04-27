@@ -38,7 +38,9 @@ export class UsersControllers{
         const { id } = req.params;
 
         const usuarios = database.select("usuarios");
-        const usuarioExiste = usuarios.some(usuario => usuario.id === id);
+        const usuarioExiste = usuarios.some((usuario) => {
+            return usuario.id === id;
+        })
 
         if(!usuarioExiste){
             return res.status(404).json({ erro: `Usuário com id: ${ id } não foi encontrado no sistema` });
