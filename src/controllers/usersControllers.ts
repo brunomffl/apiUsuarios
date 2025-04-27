@@ -43,10 +43,46 @@ export class UsersControllers{
         })
 
         if(!usuarioExiste){
-            return res.status(404).json({ erro: `Usuário com id: ${ id } não foi encontrado no sistema` });
+            return res.status(404).json({ erro: `Usuário com id: ${ id } não foi encontrado` });
         }
         database.delete("usuarios", id);
         return res.status(204).json();
+
+    }
+
+    update(req: Request, res: Response){
+        const { id } = req.params;
+
+        const usuarios = database.select("usuarios");
+        const usuarioExiste = usuarios.some((usuario) => {
+            return usuario.id === id;
+        });
+
+        if(!usuarioExiste){
+            return res.status(404).json({ erro: `Usuário com id: ${ id } não foi encontrado` });
+        };
+
+        const bodySchema = z.object({
+            nomeCompleto: z.string().trim().min(5).optional(),
+            email: z.string().email().optional(),
+            username: z.string().trim().min(4).optional()
+        });
+
+        try {
+            const novosDados = bodySchema.parse(req.body);
+            database.update("usuarios", id, novosDados);
+
+            const usuarioAtualizado = database.select("usuarios").find((user) => {
+                return user.id === id;
+            });
+            return res.json(usuarioAtualizado);
+        } catch(error) {
+            if( error instanceof z.ZodError){
+                return res.status(400).json({ erros: error.errors })
+            }
+
+            return res.status(500).json({ erro: "Erro inesperado, aguarde e tente novamente!" });
+        }
 
     }
 }

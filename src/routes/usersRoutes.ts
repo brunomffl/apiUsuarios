@@ -9,11 +9,8 @@ usersRoutes.get("/", usersController.index);
 
 usersRoutes.post("/", usersController.create);
 
-usersRoutes.delete("/:id", usersController.remove)
+usersRoutes.delete("/:id", usersController.remove);
 
-//usersRoutes.post("/", /*middleware, usersController.index*/);
-
-//usersRoutes.put("/", /*middleware, usersController.index*/);
-
+usersRoutes.put("/:id", usersController.update)
 
 export { usersRoutes }
