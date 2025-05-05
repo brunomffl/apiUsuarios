@@ -3,14 +3,14 @@ import { Database } from "../database/database.js";
 
 const database = new Database();
 
-export function verificarEmail(req: Request, res: Response, next: NextFunction){
+export async function verificarEmail(req: Request, res: Response, next: NextFunction){
     const { email } = req.body;
 
     if(!email){
         return next();
     };
 
-    const usuarios = database.select("usuarios");
+    const usuarios = await database.select("usuarios");
     const usuarioId = req.params.id;
 
 
@@ -20,7 +20,7 @@ export function verificarEmail(req: Request, res: Response, next: NextFunction){
             return false;
         }
         //aqui verifica em caso de adicionar um novo usuário, caso exista um email igual já cadastrado retorna true
-        return usuario.email === email;
+        return usuario.email.toLowerCase().trim() === email.toLowerCase().trim();
     })
 
     if(emailExiste){

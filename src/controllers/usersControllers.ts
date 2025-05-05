@@ -6,13 +6,12 @@ import { randomUUID } from "crypto";
 const database = new Database();
 
 export class UsersControllers{
-    index(req: Request, res: Response){
-        const usuarios = database.select('usuarios');
-
+    index = async (req: Request, res: Response) => {
+        const usuarios = await database.select('usuarios');
         return res.json(usuarios);
     }
 
-    create(req: Request, res: Response){
+    create = async (req: Request, res: Response) => {
         const bodySchema = z.object({
             nomeCompleto: z.string({ required_error: "É necessário informar o nome completo do usuário" })
             .trim().min(5),
@@ -23,43 +22,41 @@ export class UsersControllers{
 
         try{
             const { nomeCompleto, email, username, dataCriacao } = bodySchema.parse(req.body);
-            const novoUsuario = database.insert('usuarios', { nomeCompleto, email, username, dataCriacao });
+            const novoUsuario = await database.insert('usuarios', { nomeCompleto, email, username, dataCriacao });
             return res.status(201).json(novoUsuario);
         } catch(error) {
             if(error instanceof z.ZodError){
                 return res.status(400).json({ erros: error.errors })
             }
+            return res.status(500).json({ erro: 'Erro inesperado' });
         }
-
-        return res.status(500).json({ erro: 'Erro inesperado' });
     }
 
-    remove(req: Request, res: Response){
+    remove = async (req: Request, res: Response) => {
         const { id } = req.params;
 
-        const usuarios = database.select("usuarios");
-        const usuarioExiste = usuarios.some((usuario) => {
-            return usuario.id === id;
-        })
-
-        if(!usuarioExiste){
-            return res.status(404).json({ erro: `Usuário com id: ${ id } não foi encontrado` });
-        }
-        database.delete("usuarios", id);
-        return res.status(204).json();
-
-    }
-
-    update(req: Request, res: Response){
-        const { id } = req.params;
-
-        const usuarios = database.select("usuarios");
+        const usuarios = await database.select("usuarios");
         const usuarioExiste = usuarios.some((usuario) => {
             return usuario.id === id;
         });
 
         if(!usuarioExiste){
-            return res.status(404).json({ erro: `Usuário com id: ${ id } não foi encontrado` });
+            return res.status(404).json({ erro: `Usuário com id: ${id} não foi encontrado` });
+        }
+        await database.delete("usuarios", id);
+        return res.status(204).json();
+    }
+
+    update = async (req: Request, res: Response) => {
+        const { id } = req.params;
+
+        const usuarios = await database.select("usuarios");
+        const usuarioExiste = usuarios.some((usuario) => {
+            return usuario.id === id;
+        });
+
+        if(!usuarioExiste){
+            return res.status(404).json({ erro: `Usuário com id: ${id} não foi encontrado` });
         };
 
         const bodySchema = z.object({
@@ -70,19 +67,20 @@ export class UsersControllers{
 
         try {
             const novosDados = bodySchema.parse(req.body);
-            database.update("usuarios", id, novosDados);
+            await database.update("usuarios", id, novosDados);
 
-            const usuarioAtualizado = database.select("usuarios").find((user) => {
+            const usuariosAtualizados = await database.select("usuarios");
+            const usuarioAtualizado = usuariosAtualizados.find((user) => {
                 return user.id === id;
             });
+            
             return res.json(usuarioAtualizado);
         } catch(error) {
-            if( error instanceof z.ZodError){
+            if(error instanceof z.ZodError){
                 return res.status(400).json({ erros: error.errors })
             }
 
             return res.status(500).json({ erro: "Erro inesperado, aguarde e tente novamente!" });
         }
-
     }
 }

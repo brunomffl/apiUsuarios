@@ -11,9 +11,13 @@ type Filters = Record<string, string>;
 
 export class Database {
     #database: Record<string, DatabaseTable[]> = {};
+    #initialized: boolean = false;
+    #initPromise: Promise<void>;
 
     constructor() {
-        this.#ensureDatabaseFile();
+        this.#initPromise = this.#ensureDatabaseFile().then(() => {
+            this.#initialized = true;
+        });
     }
 
     async #ensureDatabaseFile() {
@@ -36,24 +40,34 @@ export class Database {
             }
             
             if (modificado) {
-                this.#persist();
+                await this.#persist();
             }
         } catch (error) {
             if ((error as NodeJS.ErrnoException).code === 'ENOENT') {
-                this.#persist();
+                await this.#persist();
             } else {
                 console.error('Erro ao inicializar o banco de dados:', error);
             }
         }
     }
 
-    #persist() {
-        fs.writeFile(DATABASE_PATH, JSON.stringify(this.#database, null, 2)).catch((err) => {
+    async #ensureInitialized() {
+        if (!this.#initialized) {
+            await this.#initPromise;
+        }
+    }
+
+    async #persist() {
+        try {
+            await fs.writeFile(DATABASE_PATH, JSON.stringify(this.#database, null, 2));
+        } catch (err) {
             console.error('Erro ao persistir o banco de dados:', err);
-        });
+        }
     }
     
-    insert(table: string, data: DatabaseTable) {
+    async insert(table: string, data: DatabaseTable) {
+        await this.#ensureInitialized();
+        
         const newData = { id: randomUUID(), ...data };
     
         if (Array.isArray(this.#database[table])) {
@@ -62,11 +76,13 @@ export class Database {
             this.#database[table] = [newData];
         }
     
-        this.#persist();
+        await this.#persist();
         return newData;
     }
 
-    select(table: string, filters?: Filters) {
+    async select(table: string, filters?: Filters) {
+        await this.#ensureInitialized();
+        
         let data = this.#database[table] ?? [];
 
         if (filters) {
@@ -80,7 +96,9 @@ export class Database {
         return data;
     }
 
-    update(table: string, id: string, data: Partial<DatabaseTable>) {
+    async update(table: string, id: string, data: Partial<DatabaseTable>) {
+        await this.#ensureInitialized();
+        
         const rowIndex = this.#database[table]?.findIndex((row) => row.id === id);
 
         if (rowIndex > -1) {
@@ -88,16 +106,18 @@ export class Database {
                 ...this.#database[table][rowIndex],
                 ...data
             };
-            this.#persist();
+            await this.#persist();
         }
     }
 
-    delete(table: string, id: string) {
+    async delete(table: string, id: string) {
+        await this.#ensureInitialized();
+        
         const rowIndex = this.#database[table]?.findIndex((row) => row.id === id);
 
         if (rowIndex > -1) {
             this.#database[table].splice(rowIndex, 1);
-            this.#persist();
+            await this.#persist();
         }
     }
 }
